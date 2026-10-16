@@ -14,4 +14,4 @@ dependencies = [
 ]
 
 [project.scripts]
-efi = "efi:main"
+efi = "src:main"
