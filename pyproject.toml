@@ -1,0 +1,17 @@
+[project]
+name = "efi"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "tadeo1106", email = "tadeofrias1106@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "alembic>=1.20.0",
+    "fastapi[standard]>=0.143.3",
+    "sqlmodel>=0.0.48",
+]
+
+[project.scripts]
+efi = "efi:main"
