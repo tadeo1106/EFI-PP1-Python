@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 from fastapi_pagination import Page
 from fastapi_pagination.ext.sqlmodel import paginate
-from sqlalchemy.orm.session import query
 from sqlmodel import select
 
 from src.database import SessionDep
@@ -13,8 +12,12 @@ from src.models.genero import (
     GeneroUpdate,
 )
 
-router = APIRouter()
-# falta modularizar los mensajes de error proximamente
+router = APIRouter(
+    prefix="/generos",
+    tags=["Géneros"],
+)
+# falta
+# modularizar los mensajes de error proximamente
 NO_ENCONTRADO = {404: {"description": "Género no encontrado"}}
 
 
