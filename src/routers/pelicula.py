@@ -3,6 +3,7 @@ from fastapi_pagination import Page
 from fastapi_pagination.ext.sqlmodel import paginate
 from sqlmodel import select
 
+from src.core import exceptions
 from src.database import SessionDep
 from src.models.pelicula import (
     Pelicula,
@@ -16,8 +17,6 @@ router = APIRouter(
     prefix="/peliculas",
     tags=["Películas"],
 )
-
-NO_ENCONTRADA = {404: {"description": "Película no encontrada"}}
 
 
 @router.post("/", response_model=PeliculaPublic, status_code=status.HTTP_201_CREATED)
@@ -35,19 +34,23 @@ def listar_peliculas(db: SessionDep):
     return paginate(db, query)
 
 
-@router.get("/{pelicula_id}", response_model=PeliculaNested, responses=NO_ENCONTRADA)
+@router.get(
+    "/{pelicula_id}", response_model=PeliculaNested, responses=exceptions.not_found
+)
 def obtener_pelicula(pelicula_id: int, db: SessionDep):
     pelicula = db.get(Pelicula, pelicula_id)
     if not pelicula:
-        raise HTTPException(status_code=404, detail="Película no encontrada")
+        raise HTTPException(status_code=404, detail=exceptions.PELICULA_NO_ENCONTRADA)
     return pelicula
 
 
-@router.put("/{pelicula_id}", response_model=PeliculaPublic, responses=NO_ENCONTRADA)
+@router.put(
+    "/{pelicula_id}", response_model=PeliculaPublic, responses=exceptions.not_found
+)
 def actualizar_pelicula(pelicula_id: int, data: PeliculaUpdate, db: SessionDep):
     pelicula = db.get(Pelicula, pelicula_id)
     if not pelicula:
-        raise HTTPException(status_code=404, detail="Película no encontrada")
+        raise HTTPException(status_code=404, detail=exceptions.PELICULA_NO_ENCONTRADA)
     pelicula.sqlmodel_update(data.model_dump(exclude_unset=True))
     db.add(pelicula)
     db.commit()
@@ -58,18 +61,13 @@ def actualizar_pelicula(pelicula_id: int, data: PeliculaUpdate, db: SessionDep):
 @router.delete(
     "/{pelicula_id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    responses={
-        **NO_ENCONTRADA,
-        409: {"description": "La película tiene funciones asociadas"},
-    },
+    responses={**exceptions.not_found, **exceptions.conflict},
 )
 def eliminar_pelicula(pelicula_id: int, db: SessionDep):
     pelicula = db.get(Pelicula, pelicula_id)
     if not pelicula:
-        raise HTTPException(status_code=404, detail="Película no encontrada")
+        raise HTTPException(status_code=404, detail=exceptions.PELICULA_NO_ENCONTRADA)
     if pelicula.funciones:
-        raise HTTPException(
-            status_code=409, detail="No se puede borrar una película con funciones"
-        )
+        raise HTTPException(status_code=409, detail=exceptions.PELICULA_CON_FUNCIONES)
     db.delete(pelicula)
     db.commit()

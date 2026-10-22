@@ -4,6 +4,7 @@ from fastapi_pagination import Page
 from fastapi_pagination.ext.sqlmodel import paginate
 from sqlmodel import select
 
+from src.core import exceptions
 from src.database import SessionDep
 from src.models.sala import Sala, SalaCreate, SalaPublic, SalaUpdate
 
@@ -19,11 +20,11 @@ def mostrar_salas(db: SessionDep):
     return paginate(db, query)
 
 
-@router.get("/{sala_id}", response_model=SalaPublic)
+@router.get("/{sala_id}", response_model=SalaPublic, responses=exceptions.not_found)
 def mostrar_sala(sala_id: int, db: SessionDep):
     sala = db.get(Sala, sala_id)
     if not sala:
-        raise HTTPException(status_code=404, detail="Sala no encontrada")
+        raise HTTPException(status_code=404, detail=exceptions.SALA_NO_ENCONTRADA)
     return sala
 
 
@@ -36,11 +37,11 @@ def crear_sala(new_sala: SalaCreate, db: SessionDep):
     return sala
 
 
-@router.put("/{sala_id}", response_model=SalaPublic)
+@router.put("/{sala_id}", response_model=SalaPublic, responses=exceptions.not_found)
 def actualizar_sala(sala_id: int, data: SalaUpdate, db: SessionDep):
     sala = db.get(Sala, sala_id)
     if not sala:
-        raise HTTPException(status_code=404, detail="Sala no encontrada")
+        raise HTTPException(status_code=404, detail=exceptions.SALA_NO_ENCONTRADA)
     sala.sqlmodel_update(data.model_dump())
     db.add(sala)
     db.commit()
@@ -48,11 +49,14 @@ def actualizar_sala(sala_id: int, data: SalaUpdate, db: SessionDep):
     return sala
 
 
-@router.delete("/{sala_id}")
-def eliminar_sala(sala_id: int, db: SessionDep):
+@router.delete("/{sala_id}", responses=exceptions.not_found)
+def eliminar_sala(
+    sala_id: int,
+    db: SessionDep,
+):
     sala = db.get(Sala, sala_id)
     if not sala:
-        raise HTTPException(status_code=404, detail="Sala no encontrada")
+        raise HTTPException(status_code=404, detail=exceptions.SALA_NO_ENCONTRADA)
     db.delete(sala)
     db.commit()
     return {"message": "Sala eliminada correctamente"}
