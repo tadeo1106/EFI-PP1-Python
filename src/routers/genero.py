@@ -67,5 +67,3 @@ def eliminar_genero(genero_id: int, db: SessionDep):
         raise HTTPException(status_code=409, detail=exceptions.GENERO_CON_PELICULAS)
     db.delete(genero)
     db.commit()
-
-    return {"detail": "Género eliminado correctamente"}

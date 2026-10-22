@@ -1,3 +1,5 @@
+from posix import stat
+
 from fastapi import APIRouter, HTTPException, status
 from fastapi_pagination import Page
 from fastapi_pagination.ext.sqlmodel import paginate
@@ -5,6 +7,7 @@ from sqlmodel import select
 
 from src.core import exceptions
 from src.database import SessionDep
+from src.models.genero import Genero
 from src.models.pelicula import (
     Pelicula,
     PeliculaCreate,
@@ -19,8 +22,11 @@ router = APIRouter(
 )
 
 
-@router.post("/", response_model=PeliculaPublic, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=PeliculaPublic, responses=exceptions.not_found)
 def crear_pelicula(new_pelicula: PeliculaCreate, db: SessionDep):
+    genero = db.get(Genero, new_pelicula.genero_id)
+    if not genero:
+        raise HTTPException(status_code=404, detail=exceptions.GENERO_NO_ENCONTRADO)
     pelicula = Pelicula.model_validate(new_pelicula)
     db.add(pelicula)
     db.commit()
@@ -51,6 +57,9 @@ def actualizar_pelicula(pelicula_id: int, data: PeliculaUpdate, db: SessionDep):
     pelicula = db.get(Pelicula, pelicula_id)
     if not pelicula:
         raise HTTPException(status_code=404, detail=exceptions.PELICULA_NO_ENCONTRADA)
+    genero = db.get(Genero, data.genero_id)
+    if not genero:
+        raise HTTPException(status_code=404, detail=exceptions.GENERO_NO_ENCONTRADO)
     pelicula.sqlmodel_update(data.model_dump(exclude_unset=True))
     db.add(pelicula)
     db.commit()
@@ -60,8 +69,8 @@ def actualizar_pelicula(pelicula_id: int, data: PeliculaUpdate, db: SessionDep):
 
 @router.delete(
     "/{pelicula_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
     responses={**exceptions.not_found, **exceptions.conflict},
+    status_code=status.HTTP_204_NO_CONTENT,
 )
 def eliminar_pelicula(pelicula_id: int, db: SessionDep):
     pelicula = db.get(Pelicula, pelicula_id)
