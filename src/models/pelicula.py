@@ -15,6 +15,7 @@ class PeliculaBase(SQLModel):
     descripcion: DescripcionPelicula
     portada: UrlPortada = None
     genero_id: int = Field(foreign_key="genero.id")
+    duracion: int
 
 
 class PeliculaCreate(PeliculaBase):
