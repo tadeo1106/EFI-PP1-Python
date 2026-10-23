@@ -2,7 +2,12 @@ from typing import TYPE_CHECKING, Optional
 
 from sqlmodel import Field, Relationship, SQLModel
 
-from src.models.config import DescripcionPelicula, NombrePelicula, UrlPortada
+from src.models.config import (
+    DescripcionPelicula,
+    Duracion,
+    NombrePelicula,
+    UrlPortada,
+)
 from src.models.genero import Genero, GeneroPublic
 from src.models.resumenes import FuncionResumen
 
@@ -15,7 +20,7 @@ class PeliculaBase(SQLModel):
     descripcion: DescripcionPelicula
     portada: UrlPortada = None
     genero_id: int = Field(foreign_key="genero.id")
-    duracion: int
+    duracion: Duracion
 
 
 class PeliculaCreate(PeliculaBase):

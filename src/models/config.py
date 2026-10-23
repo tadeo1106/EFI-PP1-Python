@@ -13,3 +13,4 @@ Capacidad = Annotated[int, Field(gt=0, le=1000)]
 
 Precio = Annotated[float, Field(gt=0)]
 Entradas = Annotated[int, Field(ge=0)]
+Duracion = Annotated[int, Field(gt=0, le=600)]
