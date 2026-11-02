@@ -80,7 +80,7 @@ def mostrar_proximas_funciones(db: SessionDep, limit: int = Query(default=3, le=
     return db.exec(query).all()
 
 
-@router.get("/", response_model=Page[FuncionPublic])
+@router.get("/", response_model=Page[FuncionNested])
 def listar_funciones(db: SessionDep):
     query = select(Funcion).order_by(Funcion.id)
     return paginate(db, query)

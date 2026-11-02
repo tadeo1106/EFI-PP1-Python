@@ -9,7 +9,7 @@ from src.database import SessionDep
 from src.models.sala import Sala, SalaCreate, SalaNested, SalaPublic, SalaUpdate
 
 router = APIRouter(
-    prefix="/sala",
+    prefix="/salas",
     tags=["Sala"],
 )
 

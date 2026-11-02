@@ -13,6 +13,7 @@ class PeliculaResumen(SQLModel):
     nombre: str
     portada: str | None = None
     duracion: int
+    descripcion: str
     genero: GeneroResumen
 
 
