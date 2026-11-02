@@ -12,7 +12,7 @@ app = FastAPI(
 )
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://efi-javascript-ten.vercel.app"],
     allow_credentials=True,  # Permite el envío de cookies/tokens en los headers
     allow_methods=["*"],  # Métodos permitidos (GET, POST, PUT, DELETE, etc.)
     allow_headers=["*"],  # headers permitidos

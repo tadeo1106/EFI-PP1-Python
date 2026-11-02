@@ -1,5 +1,5 @@
-from datetime import datetime
-from typing import Optional
+from datetime import datetime, timedelta
+from typing import Literal, Optional
 
 from fastapi import APIRouter, HTTPException, status
 from fastapi.param_functions import Query
@@ -26,22 +26,16 @@ router = APIRouter(
 )
 
 
-def determinar_mes(m=0):
-    fecha_actual = datetime.now()
-    mes = fecha_actual.month + m
-    year = fecha_actual.year
+def inicio_fin_semana():
 
-    if mes > 12:
-        mes -= 12
-        year += 1
+    hoy = datetime.now()
+    inicio_semana = hoy - timedelta(days=hoy.weekday())
+    print("Inicio de semana (lunes)", hoy)
+    inicio_semana = inicio_semana.replace(hour=0, minute=0, second=0, microsecond=0)
 
-    inicio_mes = datetime(year, mes, 1)
-    if mes == 12:
-        fin_mes = datetime(year + 1, 1, 1)
-    else:
-        fin_mes = datetime(year, mes + 1, 1)
+    fin_semana = inicio_semana + timedelta(days=6, hours=23, minutes=59, seconds=59)
 
-    return inicio_mes, fin_mes
+    return inicio_semana, fin_semana
 
 
 @router.post("/", response_model=PeliculaPublic, responses=exceptions.not_found)
@@ -62,8 +56,12 @@ def listar_peliculas(
     genero_id: Optional[int] = Query(
         default=None, description="Filtrar por ID de género"
     ),
-    estado: Optional[str] = Query(
-        default=None, description="Filtrar por estado: proximamente o en-cartelera"
+    estado: Literal["proximamente", "en-cartelera"] | None = Query(
+        default=None, description="Filtrar por estado"
+    ),
+    estado_semana: Optional[bool] = Query(
+        default=None,
+        description="Filtrar por las peliculas que tienen funciones de esta semana: True o False",
     ),
 ):
     query = select(Pelicula)
@@ -71,24 +69,25 @@ def listar_peliculas(
     if genero_id is not None:
         query = query.where(Pelicula.genero_id == genero_id)
 
-    if estado is not None:
+    if estado:
         if estado == "en-cartelera":
-            inicio, fin = determinar_mes(1)
+            query = query.where(Pelicula.funciones.any())
         elif estado == "proximamente":
-            inicio, fin = determinar_mes(2)
+            query = query.where(~Pelicula.funciones.any())
 
         else:
             raise HTTPException(
                 status_code=400,
                 detail="estado debe ser 'en-cartelera' o 'proximamente'",
             )
-
+    if estado_semana:
+        hoy = datetime.now()
+        inicio_semana, fin_semana = inicio_fin_semana()
         query = query.where(
             Pelicula.funciones.any(
-                (Funcion.fecha_hora >= inicio) & (Funcion.fecha_hora < fin)
+                (Funcion.fecha_hora >= hoy) & (Funcion.fecha_hora <= fin_semana)
             )
         )
-
     query = query.order_by(Pelicula.nombre)
 
     return paginate(db, query)
