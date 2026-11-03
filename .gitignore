@@ -15,6 +15,7 @@ __pycache__/
 # Base de datos local
 *.db
 *.sqlite3
+.fastapicloud
 
 # Editores y sistema
 .vscode/

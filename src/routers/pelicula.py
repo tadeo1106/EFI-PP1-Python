@@ -4,7 +4,7 @@ from typing import Literal, Optional
 from fastapi import APIRouter, HTTPException, status
 from fastapi.param_functions import Query
 from fastapi_pagination import Page
-from fastapi_pagination.ext.sqlmodel import paginate
+from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlmodel import select
 
 from src.core import exceptions
@@ -26,16 +26,16 @@ router = APIRouter(
 )
 
 
-def inicio_fin_semana():
+def fin_semana_hoy():
 
     hoy = datetime.now()
     inicio_semana = hoy - timedelta(days=hoy.weekday())
-    print("Inicio de semana (lunes)", hoy)
+
     inicio_semana = inicio_semana.replace(hour=0, minute=0, second=0, microsecond=0)
 
     fin_semana = inicio_semana + timedelta(days=6, hours=23, minutes=59, seconds=59)
 
-    return inicio_semana, fin_semana
+    return hoy, fin_semana
 
 
 @router.post("/", response_model=PeliculaPublic, responses=exceptions.not_found)
@@ -75,14 +75,8 @@ def listar_peliculas(
         elif estado == "proximamente":
             query = query.where(~Pelicula.funciones.any())
 
-        else:
-            raise HTTPException(
-                status_code=400,
-                detail="estado debe ser 'en-cartelera' o 'proximamente'",
-            )
     if estado_semana:
-        hoy = datetime.now()
-        inicio_semana, fin_semana = inicio_fin_semana()
+        hoy, fin_semana = fin_semana_hoy()
         query = query.where(
             Pelicula.funciones.any(
                 (Funcion.fecha_hora >= hoy) & (Funcion.fecha_hora <= fin_semana)
