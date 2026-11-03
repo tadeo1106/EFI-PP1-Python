@@ -3,10 +3,8 @@ name = "efi"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-authors = [
-    { name = "tadeo1106", email = "tadeofrias1106@gmail.com" }
-]
-requires-python = ">=3.14"
+authors = [{ name = "tadeo1106", email = "tadeofrias1106@gmail.com" }]
+requires-python = ">=3.12"
 dependencies = [
     "alembic>=1.20.0",
     "fastapi-pagination[sqlmodel]>=0.16.1",
@@ -17,3 +15,7 @@ dependencies = [
 
 [project.scripts]
 efi = "src:main"
+
+
+[tool.fastapi]
+entrypoint = "src.main:app"
