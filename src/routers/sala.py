@@ -1,7 +1,7 @@
 from fastapi import HTTPException, status
 from fastapi.routing import APIRouter
 from fastapi_pagination import Page
-from fastapi_pagination.ext.sqlmodel import paginate
+from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlmodel import select
 
 from src.core import exceptions
