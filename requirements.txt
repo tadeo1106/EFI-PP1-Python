@@ -52,8 +52,6 @@ fastar==0.12.0
     #   fastapi-cloud-cli
 googleapis-common-protos==1.76.0
     # via opentelemetry-exporter-otlp-proto-http
-greenlet==3.5.6
-    # via sqlalchemy
 h11==0.16.0
     # via
     #   httpcore
@@ -116,8 +114,6 @@ opentelemetry-sdk==1.45.2
     #   opentelemetry-exporter-otlp-proto-http
 opentelemetry-semantic-conventions==0.66b2
     # via opentelemetry-sdk
-packaging==26.3
-    # via sqlakeyset
 protobuf==7.36.2
     # via
     #   googleapis-common-protos
@@ -138,8 +134,6 @@ pydantic-settings==2.16.2
     # via fastapi
 pygments==2.21.0
     # via rich
-python-dateutil==4.0.0
-    # via sqlakeyset
 python-dotenv==1.2.4
     # via
     #   pydantic-settings
@@ -166,18 +160,12 @@ sentry-sdk==2.73.0
     # via fastapi-cloud-cli
 shellingham==1.5.4
     # via typer
-sqlakeyset==2.0.1787969905
-    # via fastapi-pagination
 sqlalchemy==2.1.6
     # via
-    #   efi (pyproject.toml)
     #   alembic
-    #   sqlakeyset
     #   sqlmodel
 sqlmodel==0.0.48
-    # via
-    #   efi (pyproject.toml)
-    #   fastapi-pagination
+    # via efi (pyproject.toml)
 starlette==1.10.0
     # via fastapi
 truststore==0.10.5
@@ -194,6 +182,7 @@ typing-extensions==4.16.0
     #   anyio
     #   fastapi
     #   fastapi-pagination
+    #   httpx2
     #   opentelemetry-api
     #   opentelemetry-exporter-otlp-proto-http
     #   opentelemetry-sdk
@@ -205,14 +194,13 @@ typing-extensions==4.16.0
     #   rich-toolkit
     #   sqlalchemy
     #   sqlmodel
+    #   starlette
     #   typing-inspection
 typing-inspection==0.4.4
     # via
     #   fastapi
     #   pydantic
     #   pydantic-settings
-tzdata==2026.6
-    # via python-dateutil
 urllib3==2.8.0
     # via
     #   requests

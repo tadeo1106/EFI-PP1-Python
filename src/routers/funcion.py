@@ -2,7 +2,7 @@ from datetime import datetime
 
 from fastapi import APIRouter, HTTPException, Query, status
 from fastapi_pagination import Page
-from fastapi_pagination.ext.sqlmodel import paginate
+from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlmodel import Session, select
 
 from src.core import exceptions
@@ -70,18 +70,6 @@ def crear_funcion(new_funcion: FuncionCreate, db: SessionDep):
 def listar_funciones(db: SessionDep):
     query = select(Funcion).order_by(Funcion.id)
     return paginate(db, query)
-
-
-@router.get("/proximas", response_model=list[FuncionNested])
-def mostrar_proximas_funciones(db: SessionDep, limit: int = Query(default=3, le=10)):
-    hoy = datetime.now()
-    query = (
-        select(Funcion)
-        .where(Funcion.fecha_hora >= hoy)
-        .order_by(Funcion.fecha_hora.asc())
-        .limit(limit)
-    )
-    return db.exec(query).all()
 
 
 @router.get(
