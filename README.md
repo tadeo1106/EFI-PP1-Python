@@ -15,9 +15,6 @@
 EFI/
 ├── alembic/                # Configuraciones y versiones de migraciones
 │   └── versions/           # Scripts de migración de esquema
-├── scripts/
-│   ├── seed.py             # Script de poblado inicial de base de datos
-│   └── imagenes/           # Portadas de referencia
 ├── src/
 │   ├── core/
 │   │   └── exceptions.py   # Mensajes y esquemas de error HTTP (404, 409)
